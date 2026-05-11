@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+
+{% block title %}Model Comparison - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-balance-scale me-2"></i>Model Comparison</h1>
+            <div>
+                <a href="/models" class="btn btn-outline-secondary">
+                    <i class="fas fa-brain me-1"></i> Train More Models
+                </a>
+                <a href="/" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Compare performance of different fraud detection models</p>
+    </div>
+</div>
+
+<!-- Model Results Summary -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Performance Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Accuracy</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1 Score</th>
+                                <th>AUC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for model_id, result in results.items() %}
+                                {% if 'error' not in result %}
+                                <tr>
+                                    <td>{{ result.name }}</td>
+                                    <td>{{ result.metrics.accuracy }}</td>
+                                    <td>{{ result.metrics.precision }}</td>
+                                    <td>{{ result.metrics.recall }}</td>
+                                    <td>{{ result.metrics.f1 }}</td>
+                                    <td>{{ result.metrics.auc }}</td>
+                                </tr>
+                                {% else %}
+                                <tr class="table-danger">
+                                    <td>{{ result.name }}</td>
+                                    <td colspan="5">Error: {{ result.error }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i> <strong>Metrics Explained:</strong>
+                    <ul class="mb-0">
+                        <li><strong>Accuracy:</strong> Proportion of correct predictions (both fraudulent and legitimate)</li>
+                        <li><strong>Precision:</strong> Proportion of predicted frauds that are actually fraudulent</li>
+                        <li><strong>Recall:</strong> Proportion of actual frauds that were correctly detected</li>
+                        <li><strong>F1 Score:</strong> Harmonic mean of precision and recall</li>
+                        <li><strong>AUC:</strong> Area Under the ROC Curve, measures model's ability to distinguish between classes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Model Results -->
+
+<!-- Interpretation and Recommendations -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Interpretation & Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <h5>How to Interpret the Results</h5>
+                <p>When evaluating fraud detection models, consider these factors:</p>
+                <ul>
+                    <li><strong>Balance between precision and recall:</strong> High precision reduces false positives, while high recall ensures more frauds are caught.</li>
+                    <li><strong>AUC score:</strong> Higher values (closer to 1.0) indicate better model performance at distinguishing between fraudulent and legitimate transactions.</li>
+                    <li><strong>Confusion matrix:</strong> Shows true positives, false positives, true negatives, and false negatives to understand error patterns.</li>
+                    <li><strong>Feature importance:</strong> Reveals which factors most strongly influence the model's predictions.</li>
+                </ul>
+                
+                <h5 class="mt-4">Implementation Considerations</h5>
+                <p>For implementing a fraud detection system in production:</p>
+                <ul>
+                    <li>Consider the cost of false positives (legitimate transactions flagged as fraud) vs. false negatives (fraud not detected).</li>
+                    <li>Use threshold adjustment to balance precision and recall based on business requirements.</li>
+                    <li>Ensemble methods may provide more robust detection by combining strengths of multiple models.</li>
+                    <li>Implement a monitoring system to continuously evaluate model performance as new transactions occur.</li>
+                </ul>
+                
+                <div class="mt-4">
+                    <a href="/models" class="btn btn-primary">
+                        <i class="fas fa-brain me-1"></i> Train More Models
+                    </a>
+                    <a href="/" class="btn btn-outline-primary ms-2">
+                        <i class="fas fa-tachometer-alt me-1"></i> Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

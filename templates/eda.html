@@ -1,0 +1,164 @@
+{% extends 'layout.html' %}
+
+{% block title %}Exploratory Data Analysis - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-chart-bar me-2"></i>Exploratory Data Analysis</h1>
+            <div>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Dashboard
+                </a>
+                <a href="/models" class="btn btn-primary ms-2">
+                    <i class="fas fa-brain me-1"></i> Train Models
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Visualizing patterns and relationships in e-commerce transaction data</p>
+    </div>
+</div>
+
+<!-- Data Overview Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Data Insights</h5>
+            </div>
+            <div class="card-body">
+                <p>This section provides visual insights into the e-commerce transaction data, highlighting patterns and relationships that may indicate fraudulent behavior. Explore these visualizations to better understand the key factors that differentiate legitimate and fraudulent transactions.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i> <strong>Tip:</strong> Look for significant differences between fraudulent and legitimate transactions across different variables, as these may serve as important predictors in your fraud detection models.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visualization Sections -->
+<div class="row">
+    
+    <!-- Fraud Distribution -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Fraud Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="fraud-distribution-chart" style="height: 350px;" data-chart-json='{{ fraud_dist|safe }}'></div>
+                <p class="mt-3 text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Distribution of fraudulent vs. legitimate transactions in the dataset. Note the significant class imbalance, which will be addressed during model training through techniques such as oversampling.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Correlation Matrix -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Correlation Matrix</h5>
+            </div>
+            <div class="card-body">
+                <div id="correlation-chart" style="height: 350px;" data-chart-json='{{ correlation|safe }}'></div>
+                <p class="mt-3 text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Correlation matrix showing relationships between numerical features in the dataset. Strong correlations with the fraud label (values closer to 1 or -1) indicate potentially useful predictors for fraud detection.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Method Distribution -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Payment Method Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="payment-method-chart" style="height: 350px;" data-chart-json='{{ payment_method|safe }}'></div>
+                <p class="mt-3 text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Distribution of transactions by payment method, showing which payment methods are most common and their associated fraud rates.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Category Distribution -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Product Category Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="product-category-chart" style="height: 350px;" data-chart-json='{{ product_category|safe }}'></div>
+                <p class="mt-3 text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Distribution of transactions by product category, showing which product categories are most commonly purchased and their associated fraud rates.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Device and Hour Distribution -->
+<div class="row">
+
+
+    <!-- Hour Distribution -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Hourly Transaction Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="hour-chart" style="height: 350px;" data-chart-json='{{ hour|safe }}'></div>
+                <p class="mt-3 text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Distribution of transactions by hour of day, showing peak transaction times and the hourly variation in fraud rates.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Insights and Next Steps -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Key Insights</h5>
+            </div>
+            <div class="card-body">
+                <h5>What We've Learned</h5>
+                <ul>
+                    <li>The dataset has a significant <strong>class imbalance</strong> with most transactions being legitimate</li>
+                    <li>Transaction patterns vary by <strong>payment method</strong>, <strong>product category</strong>, and <strong>device used</strong></li>
+                    <li>The correlation matrix reveals relationships between numerical features and fraud status</li>
+                    <li>Temporal patterns in the time series data may provide additional fraud indicators</li>
+                </ul>
+                
+                <h5 class="mt-4">Next Steps</h5>
+                <p>Now that we have explored the data and identified potential patterns, let's proceed to train machine learning models to detect fraudulent transactions:</p>
+                <a href="/models" class="btn btn-primary">
+                    <i class="fas fa-brain me-1"></i> Train Fraud Detection Models
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Charts will be automatically initialized by dashboard.js
+});
+</script>
+{% endblock %}

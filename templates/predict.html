@@ -1,0 +1,199 @@
+{% extends 'layout.html' %}
+
+{% block title %}Predict Fraud - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-search me-2"></i>Fraud Prediction</h1>
+            <div>
+                <a href="/models" class="btn btn-outline-secondary">
+                    <i class="fas fa-brain me-1"></i> Models
+                </a>
+                <a href="/" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Predict if a transaction is fraudulent using trained machine learning models</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Transaction Details</h5>
+            </div>
+            <div class="card-body">
+                <form id="prediction-form" action="/predict" method="post">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Enter transaction details below to predict if it's fraudulent. Required fields are marked with <span class="text-danger">*</span>
+                    </div>
+                    
+                    <!-- Model Selection -->
+                    <div class="mb-4">
+                        <label class="form-label">Select Model</label>
+                        <select class="form-select" name="model_id" required>
+                            {% for model in trained_models %}
+                                <option value="{{ model.id }}" {% if model.id == best_model %}selected{% endif %}>
+                                    {{ model.name }}{% if model.id == best_model %} (Best Performer){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Choose which trained model to use for prediction</div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Transaction Amount -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Transaction Amount <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" name="amount" step="0.01" min="0" required placeholder="e.g. 299.99">
+                            </div>
+                        </div>
+                        
+                        <!-- Quantity -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="quantity" min="1" required placeholder="e.g. 2">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Customer Age -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Customer Age <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="customer_age" min="18" max="100" required placeholder="e.g. 35">
+                        </div>
+                        
+                        <!-- Account Age Days -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Account Age (Days) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="account_age" min="0" required placeholder="e.g. 180">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Transaction Hour -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Hour of Day <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="transaction_hour" min="0" max="23" required placeholder="0-23">
+                            <div class="form-text">Hour in 24-hour format (0-23)</div>
+                        </div>
+                        
+                        <!-- Transaction Day -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Day of Month <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="transaction_day" min="1" max="31" required placeholder="1-31">
+                        </div>
+                        
+                        <!-- Transaction Month -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Month <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="transaction_month" min="1" max="12" required placeholder="1-12">
+                        </div>
+                    </div>
+                    
+                    <!-- Day of Week -->
+                    <div class="mb-3">
+                        <label class="form-label">Day of Week <span class="text-danger">*</span></label>
+                        <select class="form-select" name="day_of_week" required>
+                            <option value="0">Monday (0)</option>
+                            <option value="1">Tuesday (1)</option>
+                            <option value="2">Wednesday (2)</option>
+                            <option value="3">Thursday (3)</option>
+                            <option value="4">Friday (4)</option>
+                            <option value="5">Saturday (5)</option>
+                            <option value="6">Sunday (6)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Address Match -->
+                    <div class="mb-3">
+                        <label class="form-label">Shipping and Billing Address Match?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="address_match" id="address-match-yes" value="yes">
+                            <label class="form-check-label" for="address-match-yes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="address_match" id="address-match-no" value="no" checked>
+                            <label class="form-check-label" for="address-match-no">No</label>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Payment Method -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Payment Method <span class="text-danger">*</span></label>
+                            <select class="form-select" name="payment_method" required>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="PayPal">PayPal</option>
+                                <option value="Apple Pay">Apple Pay</option>
+                                <option value="Google Pay">Google Pay</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cryptocurrency">Cryptocurrency</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Product Category -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Product Category <span class="text-danger">*</span></label>
+                            <select class="form-select" name="product_category" required>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Home & Garden">Home & Garden</option>
+                                <option value="Beauty">Beauty</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Toys">Toys</option>
+                                <option value="Jewelry">Jewelry</option>
+                                <option value="Digital Content">Digital Content</option>
+                                <option value="Health">Health</option>
+                                <option value="Travel">Travel</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Device Used -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Device Used <span class="text-danger">*</span></label>
+                            <select class="form-select" name="device_used" required>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="Tablet">Tablet</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-1"></i> Predict Fraud Risk
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-undo me-1"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.getElementById('prediction-form');
+    form.addEventListener('submit', function(event) {
+        const amount = form.querySelector('[name="amount"]').value;
+        if (parseFloat(amount) <= 0) {
+            alert('Transaction amount must be greater than 0');
+            event.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

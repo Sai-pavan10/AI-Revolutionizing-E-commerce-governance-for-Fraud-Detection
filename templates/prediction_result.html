@@ -1,0 +1,196 @@
+{% extends 'layout.html' %}
+
+{% block title %}Prediction Result - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-chart-line me-2"></i>Prediction Result</h1>
+            <div>
+                <a href="/predict" class="btn btn-outline-secondary">
+                    <i class="fas fa-search me-1"></i> New Prediction
+                </a>
+                <a href="/" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Fraud risk assessment for the provided transaction details</p>
+    </div>
+</div>
+
+<!-- Prediction Result Card -->
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card border-{% if result.prediction == 1 %}danger{% else %}success{% endif %}">
+            <div class="card-header bg-{% if result.prediction == 1 %}danger{% else %}success{% endif %} text-white">
+                <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                    <span>
+                        {% if result.prediction == 1 %}
+                            <i class="fas fa-exclamation-triangle me-2"></i> Fraudulent Transaction Detected
+                        {% else %}
+                            <i class="fas fa-check-circle me-2"></i> Legitimate Transaction
+                        {% endif %}
+                    </span>
+                    <span class="badge bg-light text-dark">Confidence: {{ result.probability|float * 100 }}%</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="display-4 mb-2 text-{% if result.prediction == 1 %}danger{% else %}success{% endif %}">
+                        {{ result.risk_level }} Risk
+                    </div>
+                    <p class="text-muted">Model used: {{ result.model }}</p>
+                </div>
+                
+                <div class="progress mb-4" style="height: 30px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Low</div>
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Medium</div>
+                    <div class="progress-bar bg-orange" role="progressbar" style="width: 25%; background-color: #fd7e14;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">High</div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Very High</div>
+                </div>
+                
+                <div class="progress mb-4" style="height: 10px;">
+                    {% set progress_position = result.probability|float * 100 %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ progress_position }}%; background-color: {% if result.prediction == 1 %}#dc3545{% else %}#198754{% endif %};" aria-valuenow="{{ progress_position }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                
+                <div class="alert alert-{% if result.prediction == 1 %}danger{% else %}success{% endif %} mb-4">
+                    {% if result.prediction == 1 %}
+                        <p><strong>Recommendation:</strong> This transaction shows patterns typically associated with fraud and should be flagged for manual review. Consider implementing additional verification steps before processing.</p>
+                    {% else %}
+                        <p><strong>Recommendation:</strong> This transaction appears legitimate based on our fraud detection model. It can be processed normally.</p>
+                    {% endif %}
+                </div>
+                
+                <h5 class="mb-3">Transaction Details</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Transaction Amount</span>
+                                <span class="badge bg-primary rounded-pill">${{ transaction['Transaction Amount'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Quantity</span>
+                                <span class="badge bg-primary rounded-pill">{{ transaction.Quantity }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Product Category</span>
+                                <span class="badge bg-primary rounded-pill">{{ transaction['Product Category'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Payment Method</span>
+                                <span class="badge bg-primary rounded-pill">{{ transaction['Payment Method'] }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Device Used</span>
+                                <span class="badge bg-secondary rounded-pill">{{ transaction['Device Used'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Customer Age</span>
+                                <span class="badge bg-secondary rounded-pill">{{ transaction['Customer Age'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Account Age (Days)</span>
+                                <span class="badge bg-secondary rounded-pill">{{ transaction['Account Age Days'] }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Address Match</span>
+                                <span class="badge bg-{% if transaction['Address Match'] == 1 %}success{% else %}warning{% endif %} rounded-pill">
+                                    {{ 'Yes' if transaction['Address Match'] == 1 else 'No' }}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/predict" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Make Another Prediction
+                    </a>
+                    <a href="/models" class="btn btn-outline-secondary">
+                        <i class="fas fa-brain me-1"></i> View Models
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Factors Influencing Fraud Risk</h5>
+            </div>
+            <div class="card-body">
+                <p>The following factors may contribute to the fraud risk assessment:</p>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Risk Factor</th>
+                                <th>Impact</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if transaction['Address Match'] == 0 %}
+                            <tr>
+                                <td>Address Mismatch</td>
+                                <td><span class="badge bg-warning">Medium Risk</span></td>
+                                <td>Shipping and billing addresses don't match</td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% if transaction['Transaction Hour'] >= 22 or transaction['Transaction Hour'] <= 4 %}
+                            <tr>
+                                <td>Transaction Time</td>
+                                <td><span class="badge bg-warning">Medium Risk</span></td>
+                                <td>Transaction made during late night hours ({{ transaction['Transaction Hour'] }}:00)</td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% if transaction['Account Age Days'] < 30 %}
+                            <tr>
+                                <td>New Account</td>
+                                <td><span class="badge bg-warning">Medium Risk</span></td>
+                                <td>Account is relatively new ({{ transaction['Account Age Days'] }} days old)</td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% if transaction['Transaction Amount'] > 1000 %}
+                            <tr>
+                                <td>High Transaction Amount</td>
+                                <td><span class="badge bg-warning">Medium Risk</span></td>
+                                <td>${{ transaction['Transaction Amount'] }}</td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% if transaction['Payment Method'] == 'Cryptocurrency' %}
+                            <tr>
+                                <td>Payment Method</td>
+                                <td><span class="badge bg-warning">Medium Risk</span></td>
+                                <td>{{ transaction['Payment Method'] }}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> These factors are based on patterns identified during model training. The actual prediction algorithm may consider additional factors and interactions between variables.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

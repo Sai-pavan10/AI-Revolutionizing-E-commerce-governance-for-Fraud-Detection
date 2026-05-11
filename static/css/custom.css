@@ -1,0 +1,141 @@
+/* Custom CSS for Fraud Detection System */
+
+/* Dashboard cards */
+.stat-card {
+    transition: transform 0.2s ease-in-out;
+    border-left: 4px solid var(--bs-primary);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--bs-secondary);
+}
+
+.stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.stat-card.fraud {
+    border-left-color: var(--bs-danger);
+}
+
+.stat-card.legitimate {
+    border-left-color: var(--bs-success);
+}
+
+/* Visualization containers */
+.visualization-container {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.visualization-container h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--bs-light);
+}
+
+/* Model selection form */
+.model-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.model-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.model-card.selected {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-color: var(--bs-primary);
+}
+
+.model-card input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+/* Model results tab navigation */
+.model-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.model-tab {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.model-tab:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.model-tab.active {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+/* Model result containers */
+.model-result {
+    display: none;
+}
+
+.model-result.active {
+    display: block;
+}
+
+.metrics-card {
+    text-align: center;
+    padding: 1rem;
+}
+
+.metrics-card .metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.metrics-card .metric-name {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--bs-secondary);
+}
+
+/* Helper classes */
+.text-highlight {
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .metrics-card .metric-value {
+        font-size: 1.5rem;
+    }
+}

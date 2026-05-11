@@ -1,0 +1,201 @@
+{% extends 'layout.html' %}
+
+{% block title %}Train Models - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-brain me-2"></i>Fraud Detection Models</h1>
+            <div>
+                <a href="/eda" class="btn btn-outline-secondary">
+                    <i class="fas fa-chart-bar me-1"></i> EDA
+                </a>
+                <a href="/" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Train and evaluate machine learning models for fraud detection</p>
+    </div>
+</div>
+
+<!-- Model Training Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Model Selection</h5>
+            </div>
+            <div class="card-body">
+                <p>Select one or more machine learning algorithms to train on the e-commerce transaction data. The models will be evaluated using various performance metrics to determine the most effective approach for fraud detection.</p>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> <strong>Note:</strong> Training multiple models may take some time to complete. The system will handle class imbalance using SMOTE during training to improve fraud detection performance.
+                </div>
+                
+                <form id="model-selection-form" action="/train_model" method="post">
+                    <div class="row mt-4">
+                        {% for model in models %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card model-card h-100">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="models" value="{{ model.id }}" id="model-{{ model.id }}">
+                                        <label class="form-check-label" for="model-{{ model.id }}">
+                                            <h5 class="mb-2">{{ model.name }}</h5>
+                                        </label>
+                                    </div>
+                                    <p class="text-muted small mb-0">
+                                        {% if model.id == 'logistic_regression' %}
+                                            A linear model that works well for binary classification tasks like fraud detection.
+                                        {% elif model.id == 'random_forest' %}
+                                            An ensemble method that builds multiple decision trees to improve performance and reduce overfitting.
+                                        {% elif model.id == 'gradient_boosting' %}
+                                            A powerful boosting technique that builds trees sequentially to correct errors of previous models.
+                                        {% elif model.id == 'svm' %}
+                                            Support Vector Machine works by finding the optimal hyperplane that separates classes.
+                                        {% elif model.id == 'neural_network' %}
+                                            A deep learning approach using multiple layers to learn complex patterns in the data.
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play-circle me-1"></i> Train Selected Models
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model Information Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">About the Models</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="modelAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Logistic Regression
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#modelAccordion">
+                            <div class="accordion-body">
+                                <p>Logistic Regression is a statistical model that predicts the probability of an event occurring. For fraud detection, it models the probability that a transaction is fraudulent based on the feature values.</p>
+                                <p><strong>Strengths:</strong> Simple, interpretable model with good performance for linearly separable data. Provides feature importance in the form of coefficients.</p>
+                                <p><strong>Weaknesses:</strong> May not capture complex, non-linear relationships in the data.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Random Forest
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#modelAccordion">
+                            <div class="accordion-body">
+                                <p>Random Forest is an ensemble learning method that builds multiple decision trees and merges their predictions. Each tree is trained on a random subset of the data and features.</p>
+                                <p><strong>Strengths:</strong> Handles non-linear relationships well, resistant to overfitting, provides feature importance measures.</p>
+                                <p><strong>Weaknesses:</strong> Less interpretable than simpler models, can be computationally intensive with large datasets.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Gradient Boosting
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#modelAccordion">
+                            <div class="accordion-body">
+                                <p>Gradient Boosting builds decision trees sequentially, with each new tree correcting the errors of the previous ones. This approach often results in highly accurate models.</p>
+                                <p><strong>Strengths:</strong> Excellent performance, handles non-linear relationships, provides feature importance.</p>
+                                <p><strong>Weaknesses:</strong> Can overfit if not properly tuned, more complex and computationally intensive than simpler models.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Support Vector Machine
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#modelAccordion">
+                            <div class="accordion-body">
+                                <p>Support Vector Machine (SVM) finds the optimal hyperplane that maximizes the margin between different classes. It can handle non-linear separation using kernel functions.</p>
+                                <p><strong>Strengths:</strong> Effective in high-dimensional spaces, versatile with different kernel functions to capture complex relationships.</p>
+                                <p><strong>Weaknesses:</strong> Less interpretable, slower training with large datasets, sensitive to feature scaling.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Neural Network
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#modelAccordion">
+                            <div class="accordion-body">
+                                <p>Neural Networks consist of interconnected layers of neurons that learn complex patterns in the data. For fraud detection, a multi-layer neural network can identify subtle indicators of fraudulent behavior.</p>
+                                <p><strong>Strengths:</strong> Can learn complex, non-linear relationships, high performance when properly tuned, adaptable to different types of data.</p>
+                                <p><strong>Weaknesses:</strong> "Black box" nature makes interpretation difficult, requires more data to train effectively, more prone to overfitting.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make entire card clickable for model selection
+    document.querySelectorAll('.model-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Don't toggle if clicked on the checkbox itself
+            if (e.target.type !== 'checkbox') {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                
+                // Toggle selected class
+                if (checkbox.checked) {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            } else {
+                // Handle the checkbox click
+                const checkbox = e.target;
+                if (checkbox.checked) {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

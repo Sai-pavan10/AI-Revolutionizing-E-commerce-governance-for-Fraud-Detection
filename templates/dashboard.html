@@ -1,0 +1,197 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dashboard - E-Commerce Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>Fraud Detection Dashboard</h1>
+            <div>
+                <a href="/eda" class="btn btn-outline-primary">
+                    <i class="fas fa-chart-bar me-1"></i> View EDA
+                </a>
+                <a href="/models" class="btn btn-primary ms-2">
+                    <i class="fas fa-brain me-1"></i> Train Models
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Total Transactions</h5>
+                <p class="stat-value">{{ stats.total_records }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card fraud h-100">
+            <div class="card-body">
+                <h5 class="card-title">Fraudulent Transactions</h5>
+                <p class="stat-value">{{ stats.fraud_count }}</p>
+                <small class="text-muted">{{ stats.fraud_percentage }}% of total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card legitimate h-100">
+            <div class="card-body">
+                <h5 class="card-title">Legitimate Transactions</h5>
+                <p class="stat-value">{{ stats.non_fraud_count }}</p>
+                <small class="text-muted">{{ 100 - stats.fraud_percentage }}% of total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Class Imbalance Ratio</h5>
+                <p class="stat-value">1:{{ (stats.non_fraud_count / stats.fraud_count)|round(1) }}</p>
+                <small class="text-muted">Fraud : Legitimate</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview Section -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Project Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>This dashboard provides analysis of e-commerce transaction data for fraud detection. The dataset contains {{ stats.total_records }} transactions with {{ stats.fraud_percentage }}% labeled as fraudulent.</p>
+                <p>Use the EDA section to explore patterns and correlations in the data that might indicate fraudulent behavior. Then, train and compare various machine learning models in the Models section to identify the best approach for detecting fraudulent transactions.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i> <strong>Tip:</strong> Due to significant class imbalance (1:{{ (stats.non_fraud_count / stats.fraud_count)|round(1) }}), models will be trained using balanced techniques like SMOTE to improve detection of the minority fraud class.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Distribution -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Payment Method Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Payment Method</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for method, count in stats.payment_methods.items() %}
+                            <tr>
+                                <td>{{ method }}</td>
+                                <td>{{ count }}</td>
+                                <td>{{ (count / stats.total_records * 100)|round(2) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Product Category Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product Category</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, count in stats.product_categories.items() %}
+                            <tr>
+                                <td>{{ category }}</td>
+                                <td>{{ count }}</td>
+                                <td>{{ (count / stats.total_records * 100)|round(2) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Device Usage and Next Steps -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Device Usage</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Device Type</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for device, count in stats.devices.items() %}
+                            <tr>
+                                <td>{{ device }}</td>
+                                <td>{{ count }}</td>
+                                <td>{{ (count / stats.total_records * 100)|round(2) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column h-100">
+                    <p>Continue your fraud detection analysis with these steps:</p>
+                    <ol>
+                        <li>Explore data patterns in the <a href="/eda">EDA section</a> to identify potential fraud indicators</li>
+                        <li>Train multiple machine learning models in the <a href="/models">Models section</a> to detect fraudulent transactions</li>
+                        <li>Compare model performances to select the best approach for your fraud detection system</li>
+                    </ol>
+                    <div class="mt-auto">
+                        <a href="/eda" class="btn btn-primary w-100">
+                            <i class="fas fa-chart-bar me-1"></i> Proceed to Data Exploration (EDA)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
